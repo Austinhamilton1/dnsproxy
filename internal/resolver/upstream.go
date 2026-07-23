@@ -1,22 +1,29 @@
 package resolver
 
 import (
+	"errors"
+
 	"github.com/miekg/dns"
 )
 
 type Upstream struct {
 	client dns.Client
-	addr   string
+	addrs  []string
 }
 
-func NewUpstream(addr string) *Upstream {
+func NewUpstream(addrs []string) *Upstream {
 	return &Upstream{
-		addr: addr,
+		addrs: addrs,
 	}
 }
 
 func (u *Upstream) Resolve(req *dns.Msg) (*dns.Msg, error) {
-	resp, _, err := u.client.Exchange(req, u.addr)
+	for _, server := range u.addrs {
+		resp, _, err := u.client.Exchange(req, server)
+		if err == nil && resp != nil && resp.Rcode == dns.RcodeSuccess {
+			return resp, err
+		}
+	}
 
-	return resp, err
+	return nil, errors.New("could not resolve")
 }

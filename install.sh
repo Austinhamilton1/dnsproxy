@@ -32,7 +32,9 @@ enable = true
 cleanup_interval = 1
 
 [upstream]
-server = "1.1.1.1:53"
+servers = [
+    "1.1.1.1:53"
+]
 
 [blocklist]
 enable = true

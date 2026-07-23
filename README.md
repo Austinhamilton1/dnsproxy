@@ -65,7 +65,10 @@ Example configuration:
 listen = "0.0.0.0:53"
 
 [upstream]
-server = "1.1.1.1:53"
+servers = [
+    "1.1.1.1:53",
+    "192.168.0.5:53"
+]
 
 [cache]
 enable = false

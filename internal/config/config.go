@@ -16,7 +16,7 @@ type CacheConfig struct {
 }
 
 type UpstreamConfig struct {
-	Server string `toml:"server"`
+	Servers []string `toml:"servers"`
 }
 
 type BlocklistConfig struct {

@@ -29,7 +29,7 @@ func main() {
 
 	var r resolver.Resolver
 
-	r = resolver.NewUpstream(cfg.Upstream.Server)
+	r = resolver.NewUpstream(cfg.Upstream.Servers)
 
 	r = resolver.NewSingleFlight(r)
 
