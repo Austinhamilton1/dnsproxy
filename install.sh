@@ -23,7 +23,8 @@ fi
 
 if [ ! -f "./config/config.toml" ]; then
     touch "./config/config.toml"
-    config="[dns]
+    cat > ./config/config.toml <<EOF
+[dns]
 listen = "127.0.0.1:53"
 
 [cache]
@@ -36,9 +37,9 @@ server = "1.1.1.1:53"
 file = "/etc/dnsproxy/blocked.txt"
 
 [log]
-level = 2"
+level = 2
+EOF
 
-    echo "$config" > "./config/config.toml"
 fi
 
 sudo mv ./build/dnsproxy /usr/local/bin/
@@ -47,7 +48,8 @@ sudo mv ./config/config.toml /etc/dnsproxy/config.toml
 sudo mv ./config/blocklist.txt /etc/dnsproxy/blocked.txt
 sudo touch /etc/systemd/system/dnsproxy.service
 
-service="[Unit]
+sudo tee /etc/systemd/system/dnsproxy.service > /dev/null <<EOF
+[Unit]
 Description=Go DNS Proxy
 After=network.target
 
@@ -62,8 +64,12 @@ RestartSec=5
 User=root
 
 [Install]
-WantedBy=multi-user.target"
+WantedBy=multi-user.target
+EOF
 
-sudo echo "$service" > /etc/systemd/system/dnsproxy.service
+if sudo systemctl is-active --quiet "systemd-resolved"; then
+	sudo systemctl stop "systemd-resolved"
+fi
 
 sudo systemctl daemon-reload
+sudo systemctl enable --now dnsproxy.service
