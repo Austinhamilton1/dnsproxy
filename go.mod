@@ -2,10 +2,12 @@ module github.com/Austinhamilton1/dnsproxy
 
 go 1.26.5
 
-require github.com/miekg/dns v1.1.72
+require (
+	github.com/miekg/dns v1.1.72
+	github.com/pelletier/go-toml/v2 v2.4.3
+)
 
 require (
-	github.com/pelletier/go-toml/v2 v2.4.3 // indirect
 	golang.org/x/mod v0.31.0 // indirect
 	golang.org/x/net v0.48.0 // indirect
 	golang.org/x/sync v0.19.0 // indirect

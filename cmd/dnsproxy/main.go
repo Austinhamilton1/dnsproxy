@@ -34,6 +34,8 @@ func main() {
 
 	r = resolver.NewUpstream(cfg.Upstream.Server)
 
+	r = resolver.NewSingleFlight(r)
+
 	r = resolver.NewCache(c, r)
 
 	if cfg.Blocklist.File != "" {

@@ -2,6 +2,7 @@ package resolver
 
 import (
 	"github.com/Austinhamilton1/dnsproxy/internal/blocker"
+	"github.com/Austinhamilton1/dnsproxy/internal/logger"
 	"github.com/miekg/dns"
 )
 
@@ -27,6 +28,8 @@ func (b *Blocker) Resolve(req *dns.Msg) (*dns.Msg, error) {
 	if !b.blocker.IsBlocked(q.Name) {
 		return b.next.Resolve(req)
 	}
+
+	logger.Info("[BLOCKED]", q.Name)
 
 	msg := new(dns.Msg)
 	msg.SetReply(req)

@@ -2,6 +2,7 @@ package resolver
 
 import (
 	"github.com/Austinhamilton1/dnsproxy/internal/cache"
+	"github.com/Austinhamilton1/dnsproxy/internal/logger"
 	"github.com/miekg/dns"
 )
 
@@ -18,9 +19,14 @@ func NewCache(c *cache.Cache, next Resolver) *Cache {
 }
 
 func (c *Cache) Resolve(req *dns.Msg) (*dns.Msg, error) {
+	q := req.Question[0]
+
 	if msg, ok := c.cache.Get(req); ok {
+		logger.Info("[CACHE HIT]", cache.Key(q))
 		return msg, nil
 	}
+
+	logger.Info("[CACHE MISS]", cache.Key(q))
 
 	msg, err := c.next.Resolve(req)
 
@@ -28,7 +34,7 @@ func (c *Cache) Resolve(req *dns.Msg) (*dns.Msg, error) {
 		return nil, err
 	}
 
-	c.cache.Set(req.Question[0], msg)
+	c.cache.Set(q, msg)
 
 	return msg, nil
 }
