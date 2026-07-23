@@ -7,7 +7,7 @@ if [ ! -d "./build" ]; then
     mkdir "./build"
 fi
 
-go build -o ./build/dnsproxy ./cmd/dnsproxy/main.go
+go build -o ./build/dnsproxy ./cmd/dnsproxy/
 
 if [ ! -d "./config" ]; then 
     mkdir "./config"
@@ -66,4 +66,4 @@ WantedBy=multi-user.target"
 
 echo "$service" > ./etc/systemd/system/dnsproxy.service
 
-systemctl daemo-reload
+systemctl daemon-reload
