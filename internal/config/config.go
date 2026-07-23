@@ -11,7 +11,8 @@ type DNSConfig struct {
 }
 
 type CacheConfig struct {
-	CleanupInterval int `toml:"cleanup_interval"`
+	CacheEnabled    bool `toml:"enable"`
+	CleanupInterval int  `toml:"cleanup_interval"`
 }
 
 type UpstreamConfig struct {
@@ -19,7 +20,8 @@ type UpstreamConfig struct {
 }
 
 type BlocklistConfig struct {
-	File string `toml:"file"`
+	BlockListEnabled bool   `toml:"enable"`
+	File             string `toml:"file"`
 }
 
 type LogConfig struct {

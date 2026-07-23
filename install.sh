@@ -28,12 +28,14 @@ if [ ! -f "./config/config.toml" ]; then
 listen = "127.0.0.1:53"
 
 [cache]
-cleanup_interval = 2
+enable = true
+cleanup_interval = 1
 
 [upstream]
 server = "1.1.1.1:53"
 
 [blocklist]
+enable = true
 file = "/etc/dnsproxy/blocked.txt"
 
 [log]

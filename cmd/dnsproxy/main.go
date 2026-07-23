@@ -27,18 +27,20 @@ func main() {
 	logger.SetLevel = logger.Level(cfg.Log.Level)
 	connStr := cfg.DNS.Listen
 
-	c := cache.New()
-	go c.Cleanup(time.Duration(cfg.Cache.CleanupInterval) * time.Minute)
-
 	var r resolver.Resolver
 
 	r = resolver.NewUpstream(cfg.Upstream.Server)
 
 	r = resolver.NewSingleFlight(r)
 
-	r = resolver.NewCache(c, r)
+	if cfg.Cache.CacheEnabled {
+		c := cache.New()
+		go c.Cleanup(time.Duration(cfg.Cache.CleanupInterval) * time.Minute)
 
-	if cfg.Blocklist.File != "" {
+		r = resolver.NewCache(c, r)
+	}
+
+	if cfg.Blocklist.BlockListEnabled {
 		b, err := blocker.Load(cfg.Blocklist.File)
 		if err != nil {
 			logger.Error(err)
