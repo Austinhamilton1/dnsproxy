@@ -41,11 +41,11 @@ level = 2"
     echo "$config" > "./config/config.toml"
 fi
 
-mv ./build/dnsproxy /usr/local/bin/
-mkdir -p /etc/dnsproxy/
-mv ./config/config.toml /etc/dnsproxy/config.toml
-mv ./config/blocklist.txt /etc/dnsproxy/blocked.txt
-touch /etc/systemd/system/dnsproxy.service
+sudo mv ./build/dnsproxy /usr/local/bin/
+sudo mkdir -p /etc/dnsproxy/
+sudo mv ./config/config.toml /etc/dnsproxy/config.toml
+sudo mv ./config/blocklist.txt /etc/dnsproxy/blocked.txt
+sudo touch /etc/systemd/system/dnsproxy.service
 
 service="[Unit]
 Description=Go DNS Proxy
@@ -64,6 +64,6 @@ User=root
 [Install]
 WantedBy=multi-user.target"
 
-echo "$service" > ./etc/systemd/system/dnsproxy.service
+sudo echo "$service" > /etc/systemd/system/dnsproxy.service
 
-systemctl daemon-reload
+sudo systemctl daemon-reload
