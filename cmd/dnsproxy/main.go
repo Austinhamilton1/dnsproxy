@@ -2,24 +2,54 @@ package main
 
 import (
 	"flag"
-	"fmt"
-	"log"
+	"time"
 
+	"github.com/Austinhamilton1/dnsproxy/internal/blocker"
+	"github.com/Austinhamilton1/dnsproxy/internal/cache"
+	"github.com/Austinhamilton1/dnsproxy/internal/config"
+	"github.com/Austinhamilton1/dnsproxy/internal/logger"
+	"github.com/Austinhamilton1/dnsproxy/internal/resolver"
 	"github.com/Austinhamilton1/dnsproxy/internal/server"
 )
 
 func main() {
-	portPtr := flag.Int("port", 5353, "port to run the server on")
-	blockFilePtr := flag.String("blocked", "", "name of the file to add blocked IPs from")
+	logger.Init()
+
+	configFilePtr := flag.String("config", "", "points to the config (.toml) file for the proxy")
 
 	flag.Parse()
 
-	port := *portPtr
-	connStr := fmt.Sprintf("127.0.0.1:%d", port)
+	cfg, err := config.Load(*configFilePtr)
+	if err != nil {
+		logger.Error("could not parse config file:", err.Error())
+	}
 
-	s := server.New(connStr, *blockFilePtr)
+	logger.SetLevel = logger.Level(cfg.Log.Level)
+	connStr := cfg.DNS.Listen
+
+	c := cache.New()
+	go c.Cleanup(time.Duration(cfg.Cache.CleanupInterval) * time.Minute)
+
+	var r resolver.Resolver
+
+	r = resolver.NewUpstream(cfg.Upstream.Server)
+
+	r = resolver.NewCache(c, r)
+
+	if cfg.Blocklist.File != "" {
+		b, err := blocker.Load(cfg.Blocklist.File)
+		if err != nil {
+			logger.Error(err)
+		}
+
+		r = resolver.NewBlocker(b, r)
+	}
+
+	r = resolver.NewLogger(r)
+
+	s := server.New(connStr, r)
 
 	if err := s.Run(); err != nil {
-		log.Fatalf("could not create DNS proxy: %s", err)
+		logger.Error("could not create DNS proxy:", err.Error())
 	}
 }

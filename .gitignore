@@ -1,0 +1,5 @@
+cmd/dnsproxy/*
+!cmd/dnsproxy/main.go
+
+go.mod
+go.sum
